@@ -1,1 +1,342 @@
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
 
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Serve static files (your HTML, CSS, JS)
+app.use(express.static(__dirname));
+
+// Serve your HTML file at the root route
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Manual product data from your CSV
+const products = [
+    { id: 13842, cost: 2.51875, category: 'Accessorie', name: 'Low Profile Tee', brand: 'MG', retail_price: 6.25, department: 'Women', sku: 'EBD588A', distribution_center_id: 1 },
+    { id: 13928, cost: 2.33835, category: 'Accessorie', name: 'Low Profile Tee', brand: 'MG', retail_price: 5.95, department: 'Women', sku: '2EAC4242', distribution_center_id: 1 },
+    { id: 14115, cost: 4.87956, category: 'Accessorie', name: 'Enzyme Relaxed Tee', brand: 'MG', retail_price: 10.99, department: 'Women', sku: 'EE364229', distribution_center_id: 1 },
+    { id: 14157, cost: 4.64877, category: 'Accessorie', name: 'Enzyme Relaxed Tee', brand: 'MG', retail_price: 10.99, department: 'Women', sku: '00BD1309', distribution_center_id: 1 },
+    { id: 14273, cost: 6.50793, category: 'Accessorie', name: 'Washed Cropped Tee', brand: 'MG', retail_price: 15.99, department: 'Women', sku: 'F531DC20', distribution_center_id: 1 },
+    { id: 15674, cost: 3.10625, category: 'Plus', name: 'Low Profile Tee', brand: 'MG', retail_price: 6.25, department: 'Women', sku: '63994CE4', distribution_center_id: 1 },
+    { id: 15816, cost: 3.1773, category: 'Plus', name: 'Low Profile Tee', brand: 'MG', retail_price: 5.95, department: 'Women', sku: '151EA8C2', distribution_center_id: 1 },
+    { id: 28646, cost: 8.73563, category: 'Accessorie', name: '4 Panel Ladies Tank', brand: 'MG', retail_price: 19.99, department: 'Men', sku: '789334DE', distribution_center_id: 1 },
+    { id: 28670, cost: 2.67594, category: 'Accessorie', name: 'Low Profile Tee', brand: 'MG', retail_price: 6.18, department: 'Men', sku: 'E74843B9', distribution_center_id: 1 },
+    { id: 28714, cost: 2.275, category: 'Accessorie', name: 'Low Profile Tee', brand: 'MG', retail_price: 6.25, department: 'Men', sku: '8CA33D44', distribution_center_id: 1 },
+    { id: 28779, cost: 7.36749, category: 'Accessorie', name: 'Fishing Hat', brand: 'MG', retail_price: 20.99, department: 'Men', sku: '167D7390', distribution_center_id: 1 },
+    { id: 28904, cost: 6.79575, category: 'Accessorie', name: 'Fashion Plate Tee', brand: 'MG', retail_price: 15.99, department: 'Men', sku: '0EBD0B8B', distribution_center_id: 1 },
+    { id: 29007, cost: 10.796, category: 'Accessorie', name: 'Washed Cropped Tee', brand: 'MG', retail_price: 26.99, department: 'Men', sku: '11172B7', distribution_center_id: 1 },
+    { id: 12777, cost: 16.69129, category: 'Swim', name: 'Womens Nightgown', brand: 'MW', retail_price: 44.99, department: 'Women', sku: '553C3741', distribution_center_id: 1 },
+    { id: 12810, cost: 21.05532, category: 'Swim', name: 'Mw Long form Nighty', brand: 'MW', retail_price: 44.99, department: 'Women', sku: '5A110FC0', distribution_center_id: 1 },
+    { id: 12812, cost: 21.1453, category: 'Swim', name: 'Womens Long NightGown', brand: 'MW', retail_price: 44.99, department: 'Women', sku: '179DB747', distribution_center_id: 1 },
+    { id: 12853, cost: 18.71584, category: 'Swim', name: 'Womens Nightgown', brand: 'MW', retail_price: 44.99, department: 'Women', sku: '5EF893A3', distribution_center_id: 1 },
+    { id: 12900, cost: 17.39565, category: 'Swim', name: 'Womens Cropped Pj', brand: 'MW', retail_price: 39.99, department: 'Women', sku: '09EA221D', distribution_center_id: 1 },
+    { id: 13247, cost: 20.65041, category: 'Swim', name: 'Womens sleepwear', brand: 'MW', retail_price: 44.99, department: 'Women', sku: 'EBG1C2B1', distribution_center_id: 1 },
+    { id: 13477, cost: 22.6089, category: 'Swim', name: 'MW Women Sleepwear', brand: 'MW', retail_price: 54.99, department: 'Women', sku: 'DBC50898', distribution_center_id: 1 },
+    { id: 13574, cost: 19.39069, category: 'Swim', name: 'Womens Nightgown', brand: 'MW', retail_price: 44.99, department: 'Women', sku: '96A83C96', distribution_center_id: 1 },
+    { id: 2848, cost: 20.9467, category: 'Active', name: '2XU Womens Activewear', brand: '2XU', retail_price: 44.95, department: 'Women', sku: '5A2756A3', distribution_center_id: 1 },
+    { id: 3039, cost: 22.62735, category: 'Active', name: '2XU Womens Activewear', brand: '2XU', retail_price: 49.95, department: 'Women', sku: 'F0204E1D', distribution_center_id: 1 },
+    { id: 9041, cost: 20.4795, category: 'Socks & Hosiery', name: '2XU Womens Activewear', brand: '2XU', retail_price: 49.95, department: 'Women', sku: '70D35568', distribution_center_id: 1 },
+    { id: 13122, cost: 68.73737, category: 'Swim', name: '2XU Womens Swimwear', brand: '2XU', retail_price: 150.41, department: 'Women', sku: '8922176F', distribution_center_id: 1 },
+    { id: 18147, cost: 17.0699, category: 'Active', name: '2XU Nons Short', brand: '2XU', retail_price: 40.45, department: 'Men', sku: '41371BE2', distribution_center_id: 1 },
+    { id: 18363, cost: 65.0558, category: 'Active', name: '2XU Mens Active Tee', brand: '2XU', retail_price: 159.94, department: 'Men', sku: '0029F088', distribution_center_id: 1 },
+    { id: 18394, cost: 22.977, category: 'Active', name: '2XU Mens Active Tee', brand: '2XU', retail_price: 49.95, department: 'Men', sku: '87549E74', distribution_center_id: 1 },
+    { id: 18465, cost: 27.24, category: 'Active', name: '2XU Mens Active Tee', brand: '2XU', retail_price: 60, department: 'Men', sku: 'C3EC22F4', distribution_center_id: 1 },
+    { id: 18593, cost: 17.0011, category: 'Active', name: '2XU Mens Active Tee', brand: '2XU', retail_price: 43.15, department: 'Men', sku: '4F9604E8', distribution_center_id: 1 },
+    { id: 18607, cost: 30.63617, category: 'Active', name: '2XU Mens Active Tee', brand: '2XU', retail_price: 79.99, department: 'Men', sku: 'CC397301', distribution_center_id: 1 },
+    { id: 12345, cost: 36.63617, category: 'Active', name: '2XU Mens Active Tee', brand: '2XU', retail_price: 79.99, department: 'Men', sku: 'CC397301', distribution_center_id: 1 }
+];
+
+// Simulated order items data (you can modify quantities to test different top sellers)
+const orderItems = [
+    // High sales for product 12777 (making it #1 bestseller)
+    ...Array(150).fill().map((_, i) => ({ id: i + 1, order_id: i + 1, product_id: 12777, inventory_item_id: i + 1, sale_price: 44.99 })),
+    // Medium-high sales for product 13574 (#2 bestseller)
+    ...Array(120).fill().map((_, i) => ({ id: i + 151, order_id: i + 151, product_id: 13574, inventory_item_id: i + 151, sale_price: 44.99 })),
+    // Medium sales for product 28779 (#3 bestseller)
+    ...Array(100).fill().map((_, i) => ({ id: i + 271, order_id: i + 271, product_id: 28779, inventory_item_id: i + 271, sale_price: 20.99 })),
+    // Medium sales for product 18363 (#4 bestseller)
+    ...Array(85).fill().map((_, i) => ({ id: i + 371, order_id: i + 371, product_id: 18363, inventory_item_id: i + 371, sale_price: 159.94 })),
+    // Lower sales for product 13122 (#5 bestseller)
+    ...Array(70).fill().map((_, i) => ({ id: i + 456, order_id: i + 456, product_id: 13122, inventory_item_id: i + 456, sale_price: 150.41 })),
+    // Random orders for other products
+    ...products.slice(5, 15).flatMap((product, productIndex) => 
+        Array(Math.floor(Math.random() * 30) + 10).fill().map((_, i) => ({
+            id: i + 526 + productIndex * 50,
+            order_id: i + 526 + productIndex * 50,
+            product_id: product.id,
+            inventory_item_id: i + 526 + productIndex * 50,
+            sale_price: product.retail_price
+        }))
+    )
+];
+
+// In-memory storage
+let sortedProductIds = []; // For binary search
+let salesData = new Map(); // product_id -> total_quantity_sold
+let topSellingProducts = [];
+
+// Binary search implementation
+function binarySearch(arr, target) {
+    let left = 0;
+    let right = arr.length - 1;
+    
+    while (left <= right) {
+        const mid = Math.floor((left + right) / 2);
+        const midValue = parseInt(arr[mid].id);
+        
+        if (midValue === target) {
+            return arr[mid];
+        } else if (midValue < target) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    return null;
+}
+
+// Load and process data on server start
+async function loadData() {
+    console.log('Processing product data...');
+    
+    // Calculate sales data
+    console.log('Calculating sales data...');
+    orderItems.forEach(item => {
+        const productId = item.product_id;
+        if (salesData.has(productId)) {
+            salesData.set(productId, salesData.get(productId) + 1);
+        } else {
+            salesData.set(productId, 1);
+        }
+    });
+
+    // Find top 5 best selling products
+    const salesArray = Array.from(salesData.entries())
+        .map(([productId, quantity]) => ({ productId: parseInt(productId), quantity }))
+        .sort((a, b) => b.quantity - a.quantity)
+        .slice(0, 5);
+
+    // Get product details for top sellers
+    topSellingProducts = salesArray.map(item => {
+        const product = products.find(p => p.id === item.productId);
+        return {
+            ...product,
+            totalSold: item.quantity,
+            rank: salesArray.indexOf(item) + 1
+        };
+    }).filter(product => product.id); // Filter out any null products
+
+    // Sort products by ID for binary search
+    sortedProductIds = [...products].sort((a, b) => a.id - b.id);
+
+    console.log('Data processing complete!');
+    console.log(`Loaded ${products.length} products`);
+    console.log(`Processed ${orderItems.length} order items`);
+    console.log('Top 5 best selling products:');
+    topSellingProducts.forEach(product => {
+        console.log(`${product.rank}. ${product.name} - ${product.totalSold} sold`);
+    });
+}
+
+// API Routes
+
+// Get all products
+app.get('/products', (req, res) => {
+    res.json({
+        success: true,
+        count: products.length,
+        data: products
+    });
+});
+
+// Get top 5 best selling products
+app.get('/products/top-sellers', (req, res) => {
+    res.json({
+        success: true,
+        message: 'Top 5 best selling products',
+        data: topSellingProducts
+    });
+});
+
+// Search product by ID using binary search
+app.get('/products/search/:id', (req, res) => {
+    const productId = parseInt(req.params.id);
+    
+    if (isNaN(productId)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid product ID. Please provide a valid number.'
+        });
+    }
+
+    const startTime = Date.now();
+    const product = binarySearch(sortedProductIds, productId);
+    const searchTime = Date.now() - startTime;
+
+    if (product) {
+        // Get sales data if available
+        const totalSold = salesData.get(productId) || 0;
+        
+        res.json({
+            success: true,
+            searchTime: `${searchTime}ms`,
+            data: {
+                ...product,
+                totalSold: totalSold
+            }
+        });
+    } else {
+        res.status(404).json({
+            success: false,
+            message: `Product with ID ${productId} not found`,
+            searchTime: `${searchTime}ms`
+        });
+    }
+});
+
+// Get product sales statistics
+app.get('/products/:id/sales', (req, res) => {
+    const productId = parseInt(req.params.id);
+    
+    if (isNaN(productId)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid product ID'
+        });
+    }
+
+    const product = binarySearch(sortedProductIds, productId);
+    const totalSold = salesData.get(productId) || 0;
+    
+    if (product) {
+        res.json({
+            success: true,
+            data: {
+                product: product,
+                totalSold: totalSold,
+                rank: topSellingProducts.findIndex(p => p.id === productId) + 1 || 'Not in top 5'
+            }
+        });
+    } else {
+        res.status(404).json({
+            success: false,
+            message: 'Product not found'
+        });
+    }
+});
+
+// Get order items for a specific product
+app.get('/products/:id/orders', (req, res) => {
+    const productId = parseInt(req.params.id);
+    
+    if (isNaN(productId)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid product ID'
+        });
+    }
+
+    const productOrders = orderItems.filter(item => item.product_id === productId);
+    
+    res.json({
+        success: true,
+        productId: productId,
+        totalOrders: productOrders.length,
+        data: productOrders
+    });
+});
+
+// Search products by name (bonus feature)
+app.get('/products/search/name/:query', (req, res) => {
+    const query = req.params.query.toLowerCase();
+    const matchingProducts = products.filter(product => 
+        product.name.toLowerCase().includes(query)
+    ).slice(0, 10); // Limit to 10 results
+
+    res.json({
+        success: true,
+        query: query,
+        count: matchingProducts.length,
+        data: matchingProducts.map(product => ({
+            ...product,
+            totalSold: salesData.get(product.id) || 0
+        }))
+    });
+});
+
+// Get sales summary
+app.get('/sales/summary', (req, res) => {
+    const totalProducts = products.length;
+    const totalOrders = orderItems.length;
+    const totalRevenue = orderItems.reduce((sum, item) => sum + item.sale_price, 0);
+    
+    res.json({
+        success: true,
+        data: {
+            totalProducts,
+            totalOrders,
+            totalRevenue: parseFloat(totalRevenue.toFixed(2)),
+            averageOrderValue: parseFloat((totalRevenue / totalOrders).toFixed(2)),
+            topSellingCategories: getTopCategories()
+        }
+    });
+});
+
+// Helper function to get top categories
+function getTopCategories() {
+    const categoryMap = new Map();
+    
+    topSellingProducts.forEach(product => {
+        if (categoryMap.has(product.category)) {
+            categoryMap.set(product.category, categoryMap.get(product.category) + product.totalSold);
+        } else {
+            categoryMap.set(product.category, product.totalSold);
+        }
+    });
+    
+    return Array.from(categoryMap.entries())
+        .map(([category, sales]) => ({ category, sales }))
+        .sort((a, b) => b.sales - a.sales);
+}
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({
+        success: false,
+        message: 'Something went wrong!',
+        error: process.env.NODE_ENV === 'production' ? {} : err.message
+    });
+});
+
+// 404 handler
+app.use('*', (req, res) => {
+    res.status(404).json({
+        success: false,
+        message: 'Route not found'
+    });
+});
+
+// Start server
+const PORT = process.env.PORT || 3000;
+
+loadData().then(() => {
+    app.listen(PORT, () => {
+        console.log(`✅ Server is running on port ${PORT}`);
+        console.log(`🌐 Open your browser and go to: http://localhost:${PORT}`);
+        console.log(`📊 API Endpoints:`);
+        console.log(`   GET /products - Get all products`);
+        console.log(`   GET /products/top-sellers - Get top 5 best sellers`);
+        console.log(`   GET /products/search/:id - Search by ID (binary search)`);
+        console.log(`   GET /products/:id/sales - Get product sales stats`);
+        console.log(`   GET /products/search/name/:query - Search by name`);
+        console.log(`   GET /sales/summary - Get sales summary`);
+    });
+}).catch(error => {
+    console.error('❌ Failed to load data:', error);
+    process.exit(1);
+});
